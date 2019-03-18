@@ -21,13 +21,13 @@ class Status:
     '''
         These functions control the bot funcionalities
     '''
-    def poll(self, is_exclude, options=""):
+    def poll(self, is_exclude=False, is_include=False, options=""):
 
         values = self.exclude_include(options)
 
         for url in self.__data__["services"]:
             
-            if (is_exclude and url["id"] in values) or (not is_exclude and not url["id"] in values):      #exclude or include services in values based on exclude parameter
+            if (is_exclude and url["id"] in values) or (is_include and url["id"] not in values):      #exclude or include services in values based on exclude parameter
                 continue
 
             req = urllib.request.Request(url["api"], headers=self.__hdr__)

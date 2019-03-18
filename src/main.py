@@ -1,34 +1,57 @@
 import argparse
 from status import Status
-import sys
 
-def commands(args=sys.argv[1:]):
+def commands():
 
-    parser = argparse.ArgumentParser(prog='StatusBot', usage='%(prog)s [options]')
-    usage = "usage: python3 statusbot [options]"
+    arger = argparse.ArgumentParser(description="StatusBot v1.0 by RuiPires")
 
-    arg_size = len(args)
-    if arg_size == 0:
-        print(usage)
-        sys.exit()
+    subparsers = arger.add_subparsers(dest="command")
 
+    poll_parser = subparsers.add_parser("poll")
+    poll_parser.add_argument("--only", dest="only")
+    poll_parser.add_argument("--exclude", dest="exclude")
+
+    history_parser = subparsers.add_parser("history")
+    history_parser.add_argument("--only", dest="only")
+
+    backup_parser = subparsers.add_parser("backup")
+    backup_parser.add_argument("file")
+
+    opts = arger.parse_args()
     bot = Status()
 
-    if args[0] == "poll":
-        bot.poll()
-    elif args[0] == "backup":
-        if(arg_size == 2):
-            bot.backup(args[1])
+    command = opts.command
+
+    if command == "poll":
+        is_exclude = True if opts.exclude else False
+        is_include = True if opts.only else False
+
+        if opts.exclude:
+            options = opts.exclude
+        elif opts.only:
+            options = opts.only
         else:
-            print(usage)
-    elif args[0] == "history":
-        bot.history()
-    elif args[0] == "fetch":
+            options = ""
+
+        bot.poll(is_exclude, is_include, options)
+    
+    elif command == "fetch":
         bot.fetch()
-    elif args[0] == "services":
+
+    elif command == "history":
+        if opts.only:
+            bot.history(True, opts.only)
+        else:
+            bot.history()
+
+    elif command == "backup":
+        bot.backup(opts.file)
+
+    elif command == "services":
         bot.services()
+
     else:
-        print(usage)
+        pass
         
     
 
