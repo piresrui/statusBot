@@ -21,8 +21,12 @@ def commands(args=sys.argv[1:]):
             bot.backup(args[1])
         else:
             print(usage)
-    elif args[0]== "history":
+    elif args[0] == "history":
         bot.history()
+    elif args[0] == "fetch":
+        bot.fetch()
+    elif args[0] == "services":
+        bot.services()
     else:
         print(usage)
         

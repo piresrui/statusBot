@@ -3,6 +3,7 @@ import os
 import urllib.request
 import re
 from shutil import copyfile
+import time
 
 class Status:
     __config_fileName__ = "config.json"
@@ -16,6 +17,10 @@ class Status:
     def __init__(self):
         self.load_data()
 
+
+    '''
+        These functions control the bot funcionalities
+    '''
 
     def poll(self):
         for url in self.__data__["services"]:
@@ -37,9 +42,34 @@ class Status:
         except:
             print("Failed file copy")
 
+    def restore(self, file):
+        try:
+            copyfile(file, self.__backup_file_location__)
+        except:
+            print("Failed file copy")
+
     def history(self):
         with open(self.__backup_file_location__) as f:
             print(f.read())
+
+
+    def fetch(self, rate=5):
+        while(True):
+            self.cls()
+            self.poll()
+            time.sleep(rate)
+
+    def services(self):
+        for i, entry in enumerate(self.__data__["services"]):
+            output = '''[{}] - {}
+                        url: {}
+                        api: {}
+                    '''.format(i, entry["name"], entry["url"], entry["api"])
+            print(output)
+
+    '''
+        Auxiliar functions
+    '''
 
 
     def output_message(self, id, date, status):
@@ -62,3 +92,7 @@ class Status:
                     print( "Error on file load" )
         else:
             print("No such file")
+
+    def cls(self):
+        os.system('cls' if os.name=='nt' else 'clear')
+
