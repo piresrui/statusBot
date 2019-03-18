@@ -3,6 +3,7 @@ import json
 import os
 import argparse
 import re
+from status import Status
 
 fileName = "config.json"
 hdr = { 'User-Agent' : 'StatusBot v1.0' }
@@ -38,9 +39,10 @@ def commands():
     parser.add_argument("poll", help="Outputs status of supported services") 
 
     args = parser.parse_args()
+    bot = Status()
 
     if args.poll:
-        stuff()
+        bot.poll()
 
         
 

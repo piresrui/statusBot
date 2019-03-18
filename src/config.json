@@ -5,7 +5,13 @@
             "name" : "BitBucket",
             "url" : "https://status.bitbucket.org",
             "api" : "https://bitbucket.status.atlassian.com/api/v2/status.json"
-        } 
+        },
+        {
+            "id" : "github",
+            "name" : "GitHub",
+            "url" : "https://status.github.org",
+            "api" : "https://www.githubstatus.com/api/v2/status.json"
+        }  
     ]
 
 }
