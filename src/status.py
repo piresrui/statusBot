@@ -2,6 +2,7 @@ import json
 import os
 import urllib.request
 import re
+from shutil import copyfile
 
 class Status:
     __config_fileName__ = "config.json"
@@ -29,6 +30,16 @@ class Status:
                 self.output_message(url["id"], page["page"]["updated_at"], "up")
             else:
                 self.output_message(url["id"], page["page"]["updated_at"], "down")
+
+    def backup(self, file):
+        try:
+            copyfile(self.__backup_file_location__, file)
+        except:
+            print("Failed file copy")
+
+    def history(self):
+        with open(self.__backup_file_location__) as f:
+            print(f.read())
 
 
     def output_message(self, id, date, status):
