@@ -1,52 +1,25 @@
-import urllib.request
-import json
-import os
 import argparse
-import re
 from status import Status
+import sys
 
-fileName = "config.json"
-hdr = { 'User-Agent' : 'StatusBot v1.0' }
+def commands(args=sys.argv[1:]):
 
+    parser = argparse.ArgumentParser(prog='StatusBot', usage='%(prog)s [options]')
 
-def stuff():
-    if os.path.exists(fileName):
-        with open('config.json') as f:
-            try:
-                data = json.load(f)
-            except:
-                print( "Error on file load" )
+    if len(args) == 0:
+        print("usage: python3 statusbot [options]")
+        return
 
-
-
-    for url in data["services"]:
-        req = urllib.request.Request(url["api"], headers=hdr)
-        response = urllib.request.urlopen(req)
-        page = json.load(response)
-
-        pat = re.compile('All Systems Operational')
-        value = page["status"]["description"].rstrip()
-
-        if pat.match(value):
-            print("Bitbucket up")
-        else:
-            print("Bitbucket down")
-
-
-def commands():
-
-    parser = argparse.ArgumentParser(description='Status Bot')
-    parser.add_argument("poll", help="Outputs status of supported services") 
-
-    args = parser.parse_args()
     bot = Status()
 
-    if args.poll:
+    if args[0] == "poll":
         bot.poll()
+    elif agrs[0] == "backup":
+        pass
+    
 
-        
-
-commands()
+if __name__ == "__main__":
+    commands()
 
    
 

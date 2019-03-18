@@ -4,27 +4,21 @@ import urllib.request
 import re
 
 class Status:
-    fileName = "config.json"
-    hdr = { 'User-Agent' : 'StatusBot v1.0' }
-    data = {}
+    __config_fileName__ = "config.json"
+    __backup_fileName__ = "backup.txt"
+    __hdr__ = { 'User-Agent' : 'StatusBot v1.0' }
+    __data__ = {}
+    __location__ = os.path.realpath( os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    __config_file_location__ = os.path.join(__location__, __config_fileName__)
+    __backup_file_location__ = os.path.join(__location__, __backup_fileName__)
 
     def __init__(self):
-        __location__ = os.path.realpath( os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        __file_location__ = os.path.join(__location__, self.fileName)
-        
-        if os.path.exists(__file_location__):
-            with open(__file_location__) as f:
-                try:
-                    self.data = json.load(f)
-                except:
-                    print( "Error on file load" )
-        else:
-            print("No such file")
+        self.load_data()
 
-        
+
     def poll(self):
-        for url in self.data["services"]:
-            req = urllib.request.Request(url["api"], headers=self.hdr)
+        for url in self.__data__["services"]:
+            req = urllib.request.Request(url["api"], headers=self.__hdr__)
             response = urllib.request.urlopen(req)
             page = json.load(response)
 
@@ -32,6 +26,28 @@ class Status:
             value = page["status"]["description"].rstrip()
 
             if pat.match(value):
-                print(url["name"], "up")
+                self.output_message(url["id"], page["page"]["updated_at"], "up")
             else:
-                print(url["name"], "down")
+                self.output_message(url["id"], page["page"]["updated_at"], "down")
+
+
+    def output_message(self, id, date, status):
+        output = "[{}] {} - {}".format(id, date, status)
+        print(output)
+
+        with open(self.__backup_file_location__, "a+") as f:
+            try:
+                f.write(output + "\n")
+            except:
+                print( "Error on file write" )
+
+
+    def load_data(self):
+        if os.path.exists(self.__config_file_location__):
+            with open(self.__config_file_location__) as f:
+                try:
+                    self.__data__ = json.load(f)
+                except:
+                    print( "Error on file load" )
+        else:
+            print("No such file")
