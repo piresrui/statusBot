@@ -10,7 +10,7 @@ def commands(args=sys.argv[1:]):
     arg_size = len(args)
     if arg_size == 0:
         print(usage)
-        return
+        sys.exit()
 
     bot = Status()
 

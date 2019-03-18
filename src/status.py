@@ -21,9 +21,15 @@ class Status:
     '''
         These functions control the bot funcionalities
     '''
+    def poll(self, is_exclude, options=""):
 
-    def poll(self):
+        values = self.exclude_include(options)
+
         for url in self.__data__["services"]:
+            
+            if (is_exclude and url["id"] in values) or (not is_exclude and not url["id"] in values):      #exclude or include services in values based on exclude parameter
+                continue
+
             req = urllib.request.Request(url["api"], headers=self.__hdr__)
             response = urllib.request.urlopen(req)
             page = json.load(response)
@@ -48,9 +54,19 @@ class Status:
         except:
             print("Failed file copy")
 
-    def history(self):
+    def history(self, include=False, options=""):
+
+        values = self.exclude_include(options)
+
         with open(self.__backup_file_location__) as f:
-            print(f.read())
+
+            if include:
+                for line in f:
+                    for v in values:
+                        if v in line:
+                            print(line)
+            else:
+                print(f.read())
 
 
     def fetch(self, rate=5):
@@ -67,7 +83,7 @@ class Status:
                     '''.format(i, entry["name"], entry["url"], entry["api"])
             print(output)
 
-    '''
+    '''!
         Auxiliar functions
     '''
 
@@ -96,3 +112,6 @@ class Status:
     def cls(self):
         os.system('cls' if os.name=='nt' else 'clear')
 
+    def exclude_include(self, options):
+        values = options.split(",")
+        return values
