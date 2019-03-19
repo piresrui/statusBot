@@ -1,10 +1,10 @@
 # StatusBot
 
-Author:     Rui Pires
-Email:      rfn.pires15@gmail.com
-College:    FCT/UNL
-Degree:     MSc in Computer Science and Engineering
-Year:       4th
+* Author:     Rui Pires
+* Email:      rfn.pires15@gmail.com
+* College:    FCT/UNL
+* Degree:     MSc in Computer Science and Engineering
+* Year:       4th
 
 ### About
 Status
@@ -25,6 +25,8 @@ StatusBot is a CLI to monitor certain micro-services, currently it monitors weth
 ### How to use
 
 ```sh
+$ git clone git@github.com:piresrui/statusBot.git
+$ cd src/
 $ python3 status_bot.py <command> <options>
 $ python3 status_bot.py poll --only=github
 $ python3 status_bot.py help

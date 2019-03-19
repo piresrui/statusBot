@@ -77,6 +77,7 @@ class Status:
         if is_merge:
             self.__merge__( file_name )
         else:
+            self.__check_if_format_valid__(file_name)
             self.__copy_file__( file_name, parameters.__backup_file_location__ )
 
     
@@ -136,6 +137,17 @@ class Status:
         except:
             print( "Failed opening file" )                
 
+    # validates correct format
+    def __check_if_format_valid__(self, file_name):
+        try:
+            with open( file_name, 'r+' ) as f:
+                data = json.load( f )
+
+                if not self.__validate_data__( data ):  #validate if file data is correct format
+                    print( "Invalid data format" )
+                    sys.exit()
+        except:
+            print( "Failed opening file" )
 
     # Merges two files
     def __merge__(self, file_name):
