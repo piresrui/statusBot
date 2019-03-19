@@ -91,7 +91,12 @@ class Arg_Controller():
             bot.restore(opts.file, True if opts.merge=="true" else False)
 
         elif command == "help":
-            print('''
+            self.help()
+        else:
+            pass
+
+    def help(self):
+        print('''
                     poll                Outputs state of services
                                             Optional args:
                                                 --only      Show only provided services                 
@@ -129,5 +134,3 @@ class Arg_Controller():
 
                     status              Outputs stats for the services
                 ''')
-        else:
-            pass
