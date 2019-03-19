@@ -5,101 +5,121 @@ import re
 from shutil import copyfile
 import time
 import sys
+import parameters
 
 class Status:
-    __config_fileName__ = "config.json"
-    __backup_fileName__ = "backup.json"
-    __hdr__ = { 'User-Agent' : 'StatusBot v1.0' }
-    __data__ = {}
-    __location__ = os.path.realpath( os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    __config_file_location__ = os.path.join(__location__, __config_fileName__)
-    __backup_file_location__ = os.path.join(__location__, __backup_fileName__)
-    __date_format__ = "%Y-%m-%dT%H:%M:%S.%fZ"
-
     def __init__(self):
-        self.load_data()
-        self.create_backup()
+        self.__load_data__()
+        self.__create_backup__()
 
 
-    ###
+    ###########################################################
     ###    These functions control the bot funcionalities
-    ###
+    ############################################################
 
+    ### param is_exclude : Boolean, defines if there exists --exclude option
+    ### param is_include : Boolean, defines if there exists --only option
+    ### param options    : String, contains optional arguments
     def poll(self, is_exclude=False, is_include=False, options=""):
 
-        values = self.exclude_include(options)
+        values = self.__exclude_include__( options )  #separate options into list
 
-        for url in self.__data__["services"]:
+        for url in parameters.__data__["services"]:
             
             if (is_exclude and url["id"] in values) or (is_include and url["id"] not in values):      #exclude or include services in values based on exclude parameter
                 continue
 
-            req = urllib.request.Request(url["api"], headers=self.__hdr__)
-            response = urllib.request.urlopen(req)
-            page = json.load(response)
+            # make get request to API
+            try:
+                req = urllib.request.Request( url["api"], headers=parameters.__hdr__ )
+                response = urllib.request.urlopen( req )
+            except:
+                print("Failed probing", url["url"])
+                continue
+            
+            page = json.load( response )
 
-            pat = re.compile('All Systems Operational')
+            pat = re.compile( parameters.__success_message__ )
             value = page["status"]["description"].rstrip()
 
-            status = "up" if pat.match(value) else "down"
+            status = "up" if pat.match( value ) else "down"
 
-            print(self.output_message(url["id"], page["page"]["updated_at"], status))
-            self.save_history(url["id"], page["page"]["updated_at"], status)
-            
+            print( self.__output_message__( url["id"], page["page"]["updated_at"], status ) )
+            self.__save_history__( url["id"], page["page"]["updated_at"], status )
+
+    
+    ### param is_exclude : Boolean, defines if there exists --exclude option
+    ### param is_include : Boolean, defines if there exists --only option
+    ### param options    : String, contains optional arguments
+    ### param rate       : Integer, refresh rate in seconds
+    def fetch(self, is_exclude, is_include, options, rate=5):
+        while(True):
+            self.__cls__()
+            self.poll( is_exclude, is_include, options )
+            time.sleep( rate )
+
+
+
+    ### param file_name   : String, path of file
+    ### param file_format : String, format to save in
     def backup(self, file_name, file_format):
-        self.backup_type(file_name, file_format)
+        self.__backup_type__( file_name, file_format )
 
+
+    ### param file_name : String, path of file
+    ### param is_merge  : Boolean, defines if restore should be merge
     def restore(self, file_name, is_merge):
 
         if is_merge:
-            self.merge(file_name)
+            self.__merge__( file_name )
         else:
-            self.copy(file_name)
+            self.__copy_file__( file_name, parameters.__backup_file_location__ )
 
+    
+    ### param include  : Boolean, defines if option --only is on
+    ### param options  : String, contained values of --only option
     def history(self, include=False, options=""):
 
-        values = self.exclude_include(options)
+        values = self.__exclude_include__( options )  #separate options into list
 
-        with open(self.__backup_file_location__) as f:
-            if include:
-                for line in f:
-                    for v in values:
-                        if v in line:
-                            print(line.rstrip())
-            else:
-                print(f.read())
+        try:
+            with open( parameters.__backup_file_location__ ) as f:
+                if include:
+                    for line in f:
+                        for v in values:
+                            if v in line:
+                                print( line.rstrip() )
+                else:
+                    print( f.read() )
+        except:
+            print( "Failed opening file" )
 
 
-    def fetch(self, is_exclude, is_include, options, rate=5):
-        while(True):
-            self.cls()
-            self.poll(is_exclude, is_include, options)
-            time.sleep(int(rate))
-
+    ### Prints services
     def services(self):
-        for i, entry in enumerate(self.__data__["services"]):
+        for i, entry in enumerate( parameters.__data__["services"] ):
             output = '''[{}] - {}
                         url: {}
                         api: {}
-                    '''.format(i, entry["name"], entry["url"], entry["api"])
-            print(output)
+                    '''.format( i, entry["name"], entry["url"], entry["api"] )
+            print( output ) 
 
-    ###
+    
+    
+    
+    ################################################
     #   Auxiliar functions
-    ###
+    #################################################
 
 
-    # Prints message format for poll/fetch and writes to history file 
-    def output_message(self, id, date, status):
-        output = "[{}] {} - {}".format(id, date, status)
-        return output
+    
 
-    # Saves history to file based
-    def save_history(self, id, date, status):
-        with open(self.__backup_file_location__, 'r+') as f:
-            try:
+    # Saves history to local storage
+    def __save_history__(self, id, date, status):
+        try:
+            with open(parameters.__backup_file_location__, 'r+') as f:
 
-                backup_data = json.load(f)
+                backup_data = json.load( f )
 
                 backup_data[id].append(
                                     {
@@ -108,104 +128,89 @@ class Status:
                                     } 
                                 )
 
-                f.seek(0)
-                json.dump(backup_data, f, indent=4)
-                f.truncate()
-            
-            except Exception as e:
-                print( e )
+                self.__reset_file__( f, backup_data )
+        except:
+            print( "Failed opening file" )                
 
-    # Stores JSON data in config file into data variable
-    def load_data(self):
-        if os.path.exists(self.__config_file_location__):
-            with open(self.__config_file_location__) as f:
+
+    # Merges two files
+    def __merge__(self, file_name):
+        try:
+            with open( parameters.__backup_file_location__, 'r+' ) as f:
+                with open( file_name, 'r+' ) as merge_file:
+
+                        backup_data = json.load( f )
+                        merge_data = json.load( merge_file )
+
+                        if not self.__validate_data__( merge_data ):  #validate if file data is correct format
+                            print( "Invalid data format" )
+                            sys.exit()
+
+                        for service, stats in merge_data.items():
+                            for item in stats:
+                                backup_data[service].append( item )
+
+                        self.__reset_file__( f, backup_data )   
+        except:
+            print( "Failed opening file")
+
+
+    # Backup files based on type    
+    def __backup_type(self, file_name, file_format):
+
+        if file_format == "default":                                    # default format, simply copy file
+            
+            self.__copy_file__( parameters.__backup_file_location__, file_name )
+
+        elif file_format == "csv" or file_format == "txt":                                      
+            try:
+                with open( file_name, "w+" ) as f:
+                    with open( parameters.__backup_file_location__ ) as b_file:
+                        backup_data = json.load( b_file )
+                        for service, stats in backup_data.items():
+                            for entry in stats:
+                                if file_format == "csv":                                                    
+                                    f.write( "{},{},{}\n".format( service, entry["date"], entry["status"] ) )           # csv format, separate content by comma's
+                                else:
+                                    f.write( self.__output_message__( service, entry["date"], entry["status"]) + "\n" )     # txt format, use poll format
+            except:
+                print( "Failed opening file" )
+
+        else:
+            print("Invalid format")
+
+
+    # Prints message format for poll/fetch and writes to history file 
+    def __output_message__(self, id, date, status):
+        output = "[{}] {} - {}".format( id, date, status )
+        return output
+ 
+    # load config file into __data__ variable
+    def __load_data__(self):
+        if os.path.exists( parameters.__config_file_location__ ):
+            with open( parameters.__config_file_location__ ) as f:
                 try:
-                    self.__data__ = json.load(f)
+                    parameters.__data__ = json.load( f )
                 except:
                     print( "Error on file load" )
         else:
             print("No such file")
 
     # Terminal window clear
-    def cls(self):
-        os.system('cls' if os.name=='nt' else 'clear')
+    def __cls__(self):
+        os.system( 'cls' if os.name=='nt' else 'clear' )
 
     # Splits values for options in to an array
-    def exclude_include(self, options):
-        values = options.split(",")
+    def __exclude_include__(self, options):
+        values = options.split( "," )
         return values
 
-    # Copies given file into backup file
-    def copy(self, file_name):
-        try:
-            copyfile(file_name, self.__backup_file_location__)
-        except:
-            print("Failed file copy")
-
-
-    def create_backup(self):
-        if not os.path.exists(self.__backup_file_location__):
-            with open(self.__backup_file_location__, "w+") as f:
-                backup = {}
-                for service in self.__data__["services"]:
-                    backup[service["id"]] = []
-                json.dump(backup, f, indent=4)
-
-    # Merges two files
-    def merge(self, file_name):
-
-        with open(self.__backup_file_location__, 'r+') as f:
-            with open(file_name, 'r+') as merge_file:
-                try:
-
-                    backup_data = json.load(f)
-                    merge_data = json.load(merge_file)
-
-                    if not self.validate_data(merge_data):  #validate if file data is correct format
-                        print("Invalid data format")
-                        sys.exit()
-
-                    for service, stats in merge_data.items():
-                        for item in stats:
-                            backup_data[service].append(item)
-
-                    f.seek(0)
-                    json.dump(backup_data, f, indent=4)
-                    f.truncate()
-                
-                except Exception as e:
-                    print( e )
-
-    def backup_type(self, file_name, file_format):
-
-        if file_format == "default":
-            copyfile(self.__backup_file_location__, file_name)
-
-        elif file_format == "csv":
-
-            with open(file_name, "w+") as f:
-                with open(self.__backup_file_location__) as b_file:
-                    backup_data = json.load(b_file)
-                    for service, stats in backup_data.items():
-                        for entry in stats:
-                            f.write(service + "," + entry["date"] + "," + entry["status"] + "\n")
-
-        elif file_format == "txt":
-
-            with open(file_name, "w+") as f:
-                with open(self.__backup_file_location__) as b_file:
-                    backup_data = json.load(b_file)
-                    for service, stats in backup_data.items():
-                        for entry in stats:
-                           f.write(self.output_message(service, entry["date"], entry["status"]) + "\n")
-        else:
-            print("Invalid format.")
-
-    def validate_data(self, data):
+    # validate is merge file data is in correct format
+    def __validate_data__(self, data):
 
         services = []
         for service in self.__data__["services"]:
-            services.append(service["id"])
+            services.append( service["id"] )
 
         
         for service, stats in data.items():
@@ -215,10 +220,30 @@ class Status:
                 for key, _ in item.items():
                     if key not in ["date", "status"]:
                         return False
+
         return True
 
+    # created backup file
+    def __create_backup__(self):
+        if not os.path.exists( parameters.__backup_file_location__ ):
+            with open( parameters.__backup_file_location__, "w+" ) as f:
+                backup = {}
+                for service in parameters.__data__["services"]:
+                    backup[service["id"]] = []
+                json.dump( backup, f, indent=4 )
 
 
+    # Copies given file into backup file
+    def __copy_file__(self, src, dest):
+        try:
+            copyfile( src, dest )
+        except:
+            print("Failed file copy")
 
+    # resets file for writing
+    def __reset_file__(self, f, backup_data):
+        f.seek( 0 )
+        json.dump( backup_data, f, indent=4 )
+        f.truncate( )
 
         
