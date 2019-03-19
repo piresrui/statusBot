@@ -119,12 +119,26 @@ class Status:
         values = options.split(",")
         return values
 
-    def merge(self, file):
-        pass
-
     # Copies given file into backup file
     def copy(self, file):
         try:
             copyfile(file, self.__backup_file_location__)
         except:
             print("Failed file copy")
+
+    # Merges two files
+    def merge(self, file):
+        file_names = [file, __backup_file_location__]
+
+
+        #copies both files into a new one line by line, better for bigger files
+        with open(os.path.join(__location__, "tmp.txt")) as f:
+            for file in file_names:
+                with open(file) as in_file:
+                    for line in in_file:
+                        f.write(line)
+
+        os.remove( __backup_file_location__ )
+        os.rename( os.path.join(__location__, "tmp.txt"), __backup_file_location__ )
+
+        
