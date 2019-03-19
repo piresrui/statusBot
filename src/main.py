@@ -7,19 +7,24 @@ def commands():
 
     subparsers = arger.add_subparsers(dest="command")
 
-    poll_parser = subparsers.add_parser("poll")
-    poll_parser.add_argument("--only", dest="only")
+    poll_parser = subparsers.add_parser("poll", help="Outputs state of services")
+    poll_parser.add_argument("--only", dest="only", help="Show only these services ex: --only=github,slack")
     poll_parser.add_argument("--exclude", dest="exclude")
 
-    history_parser = subparsers.add_parser("history")
+    fetch_parser = subparsers.add_parser("fetch", help="Polls services every n seconds")
+    fetch_parser.add_argument("rate")
+
+    history_parser = subparsers.add_parser("history", help="Outputs history of poll/fetch requests")
     history_parser.add_argument("--only", dest="only")
 
-    backup_parser = subparsers.add_parser("backup")
+    backup_parser = subparsers.add_parser("backup", help="Stores history in provided file")
     backup_parser.add_argument("file")
 
-    restore_parser = subparsers.add_parser("restore")
+    restore_parser = subparsers.add_parser("restore", help="Replaces history file with provided file")
     restore_parser.add_argument("file")
     restore_parser.add_argument("--merge", dest="merge")
+
+    services_parser = subparsers.add_parser("services", help="Outputs available services")
 
     opts = arger.parse_args()
     bot = Status()
@@ -40,7 +45,10 @@ def commands():
         bot.poll(is_exclude, is_include, options)
     
     elif command == "fetch":
-        bot.fetch()
+        if opts.rate:
+            bot.fetch(opts.rate)
+        else:
+            bot.fetch()
 
     elif command == "history":
         if opts.only:

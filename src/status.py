@@ -58,12 +58,11 @@ class Status:
         values = self.exclude_include(options)
 
         with open(self.__backup_file_location__) as f:
-
             if include:
                 for line in f:
                     for v in values:
                         if v in line:
-                            print(line)
+                            print(line.rstrip())
             else:
                 print(f.read())
 
@@ -72,7 +71,7 @@ class Status:
         while(True):
             self.cls()
             self.poll()
-            time.sleep(rate)
+            time.sleep(int(rate))
 
     def services(self):
         for i, entry in enumerate(self.__data__["services"]):
