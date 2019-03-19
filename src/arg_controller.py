@@ -94,26 +94,34 @@ class Arg_Controller():
             print('''
                     poll                Outputs state of services
                                             Optional args:
-                                                --only      Show only provided services                 usage: poll --only=bitbucket
-                                                --exclude   Omit provided services                      usage: poll --exclude=github  
+                                                --only      Show only provided services                 
+                                                            usage: poll --only=bitbucket
+                                                --exclude   Omit provided services                      
+                                                            usage: poll --exclude=github  
 
                     fetch               Calls poll every 5 seconds
                                             Optional agrs:
-                                                --rate      Refresh every rate seconds                  usage: fetch --rate=2
-                                                --only      Show only provided services                 usage: fetch --only=bitbucket
-                                                --exclude   Omit provided services                      usage: fetch --exclude=github  
+                                                --rate      Refresh every rate seconds                  
+                                                            usage: fetch --rate=2
+                                                --only      Show only provided services                 
+                                                            usage: fetch --only=bitbucket
+                                                --exclude   Omit provided services                      
+                                                            usage: fetch --exclude=github  
 
                     history             Outputs all previous recorded poll/fetch calls
                                             Optional args:
-                                                --only      Show only provided services                 usage: history --only=github
+                                                --only      Show only provided services                 
+                                                            usage: history --only=github
 
                     backup <file_path>  Copies history to <file_path> in JSON format
                                             Optional args:
-                                                --format    Store data in requested format (TXT or CSV) usage: backup <file_path> --format=csv
+                                                --format    Store data in requested format (TXT or CSV) 
+                                                            usage: backup <file_path> --format=csv
 
                     restore <file_path> Replaces provided JSON backup into history
                                             Optional args:
-                                                --merge     Merges content instead of replacing it      usage: restore <file_path> --merge=true
+                                                --merge     Merges content instead of replacing it      
+                                                            usage: restore <file_path> --merge=true
 
                     services            Outputs available services and endpoints
 

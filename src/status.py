@@ -70,6 +70,10 @@ class Status:
     ### param is_merge  : Boolean, defines if restore should be merge
     def restore(self, file_name, is_merge):
 
+        if not file_name.endswith('.json'):
+            print( "Wrong file extension" )
+            sys.exit()
+
         if is_merge:
             self.__merge__( file_name )
         else:
@@ -156,7 +160,7 @@ class Status:
 
 
     # Backup files based on type    
-    def __backup_type(self, file_name, file_format):
+    def __backup_type__(self, file_name, file_format):
 
         if file_format == "default":                                    # default format, simply copy file
             
@@ -209,7 +213,7 @@ class Status:
     def __validate_data__(self, data):
 
         services = []
-        for service in self.__data__["services"]:
+        for service in parameters.__data__["services"]:
             services.append( service["id"] )
 
         
