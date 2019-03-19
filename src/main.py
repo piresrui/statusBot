@@ -17,6 +17,10 @@ def commands():
     backup_parser = subparsers.add_parser("backup")
     backup_parser.add_argument("file")
 
+    restore_parser = subparsers.add_parser("restore")
+    restore_parser.add_argument("file")
+    restore_parser.add_argument("--merge", dest="merge")
+
     opts = arger.parse_args()
     bot = Status()
 
@@ -49,6 +53,9 @@ def commands():
 
     elif command == "services":
         bot.services()
+
+    elif command == "restore":
+        bot.restore(opts.file, True if opts.merge=="true" else False)
 
     else:
         pass

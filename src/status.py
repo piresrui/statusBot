@@ -18,9 +18,10 @@ class Status:
         self.load_data()
 
 
-    '''
-        These functions control the bot funcionalities
-    '''
+    ###
+    ###    These functions control the bot funcionalities
+    ###
+
     def poll(self, is_exclude=False, is_include=False, options=""):
 
         values = self.exclude_include(options)
@@ -37,22 +38,20 @@ class Status:
             pat = re.compile('All Systems Operational')
             value = page["status"]["description"].rstrip()
 
-            if pat.match(value):
-                self.output_message(url["id"], page["page"]["updated_at"], "up")
-            else:
-                self.output_message(url["id"], page["page"]["updated_at"], "down")
-
+            self.output_message(url["id"], page["page"]["updated_at"], "up" if pat.match(value) else "down")
+            
     def backup(self, file):
         try:
             copyfile(self.__backup_file_location__, file)
         except:
             print("Failed file copy")
 
-    def restore(self, file):
-        try:
-            copyfile(file, self.__backup_file_location__)
-        except:
-            print("Failed file copy")
+    def restore(self, file, is_merge):
+
+        if is_merge:
+            merge(file)
+        else:
+            copy(file)
 
     def history(self, include=False, options=""):
 
@@ -83,11 +82,12 @@ class Status:
                     '''.format(i, entry["name"], entry["url"], entry["api"])
             print(output)
 
-    '''!
-        Auxiliar functions
-    '''
+    ###
+    #   Auxiliar functions
+    ###
 
 
+    # Prints message format for poll/fetch and writes to history file 
     def output_message(self, id, date, status):
         output = "[{}] {} - {}".format(id, date, status)
         print(output)
@@ -99,6 +99,7 @@ class Status:
                 print( "Error on file write" )
 
 
+    # Stores JSON data in config file into data variable
     def load_data(self):
         if os.path.exists(self.__config_file_location__):
             with open(self.__config_file_location__) as f:
@@ -109,9 +110,21 @@ class Status:
         else:
             print("No such file")
 
+    # Terminal window clear
     def cls(self):
         os.system('cls' if os.name=='nt' else 'clear')
 
+    # Splits values for options in to an array
     def exclude_include(self, options):
         values = options.split(",")
         return values
+
+    def merge(self, file):
+        pass
+
+    # Copies given file into backup file
+    def copy(self, file):
+        try:
+            copyfile(file, self.__backup_file_location__)
+        except:
+            print("Failed file copy")
