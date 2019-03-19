@@ -8,11 +8,13 @@ def commands():
     subparsers = arger.add_subparsers(dest="command")
 
     poll_parser = subparsers.add_parser("poll", help="Outputs state of services")
-    poll_parser.add_argument("--only", dest="only", help="Show only these services ex: --only=github,slack")
+    poll_parser.add_argument("--only", dest="only")
     poll_parser.add_argument("--exclude", dest="exclude")
 
     fetch_parser = subparsers.add_parser("fetch", help="Polls services every n seconds")
     fetch_parser.add_argument("--rate", dest="rate")
+    fetch_parser.add_argument("--only", dest="only")
+    fetch_parser.add_argument("--exclude", dest="exclude")
 
     history_parser = subparsers.add_parser("history", help="Outputs history of poll/fetch requests")
     history_parser.add_argument("--only", dest="only")
@@ -26,6 +28,8 @@ def commands():
     restore_parser.add_argument("--merge", dest="merge")
 
     services_parser = subparsers.add_parser("services", help="Outputs available services")
+
+    help_parser = subparsers.add_parser("help")
 
     opts = arger.parse_args()
     bot = Status()
@@ -46,10 +50,20 @@ def commands():
         bot.poll(is_exclude, is_include, options)
     
     elif command == "fetch":
-        if opts.rate:
-            bot.fetch(opts.rate)
+        is_exclude = True if opts.exclude else False
+        is_include = True if opts.only else False
+
+        if opts.exclude:
+            options = opts.exclude
+        elif opts.only:
+            options = opts.only
         else:
-            bot.fetch()
+            options = ""
+
+        if opts.rate:
+            bot.fetch(is_exclude, is_include, options, opts.rate)
+        else:
+            bot.fetch(is_exclude, is_include, options)
 
     elif command == "history":
         if opts.only:
@@ -59,7 +73,7 @@ def commands():
 
     elif command == "backup":
         option = opts.file_format if opts.file_format else "default"
-        bot.backup(opts.file, option)
+        bot.backup(opts.file, option.lower())
 
     elif command == "services":
         bot.services()
@@ -67,6 +81,37 @@ def commands():
     elif command == "restore":
         bot.restore(opts.file, True if opts.merge=="true" else False)
 
+    elif command == "help":
+        print('''
+                poll                Outputs state of services
+                                        Optional args:
+                                            --only      Show only provided services                 usage: poll --only=bitbucket
+                                            --exclude   Omit provided services                      usage: poll --exclude=github  
+
+                fetch               Calls poll every 5 seconds
+                                        Optional agrs:
+                                            --rate      Refresh every rate seconds                  usage: fetch --rate=2
+                                            --only      Show only provided services                 usage: fetch --only=bitbucket
+                                            --exclude   Omit provided services                      usage: fetch --exclude=github  
+
+                history             Outputs all previous recorded poll/fetch calls
+                                        Optional args:
+                                            --only      Show only provided services                 usage: history --only=github
+
+                backup <file_path>  Copies history to <file_path> in JSON format
+                                        Optional args:
+                                            --format    Store data in requested format (TXT or CSV) usage: backup <file_path> --format=csv
+
+                restore <file_path> Replaces provided JSON backup into history
+                                        Optional args:
+                                            --merge     Merges content instead of replacing it      usage: restore <file_path> --merge=true
+
+                services            Outputs available services and endpoints
+
+                help                Outputs help message
+
+                status              Outputs stats for the services
+            ''')
     else:
         pass
         

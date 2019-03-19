@@ -70,10 +70,10 @@ class Status:
                 print(f.read())
 
 
-    def fetch(self, rate=5):
+    def fetch(self, is_exclude, is_include, options, rate=5):
         while(True):
             self.cls()
-            self.poll()
+            self.poll(is_exclude, is_include, options)
             time.sleep(int(rate))
 
     def services(self):
