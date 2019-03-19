@@ -14,12 +14,12 @@ StatusBot is a CLI to monitor certain micro-services, currently it monitors weth
 * StatusBot was developed in python 3.7.2 and it uses only included modules
 * The modules used are:
     * argparse  :   Parsing arguments
-    * os        :   file operations
+    * os        :   File operations
     * json      :   JSON parsing
     * urllib    :   API requests
     * re        :   String compares
     * shutil    :   File copying   
-    * time      :   Date comparisons
+    * time      :   Sleep
     * sys       :   Exiting
 
 ### How to use
