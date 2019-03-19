@@ -12,13 +12,14 @@ def commands():
     poll_parser.add_argument("--exclude", dest="exclude")
 
     fetch_parser = subparsers.add_parser("fetch", help="Polls services every n seconds")
-    fetch_parser.add_argument("rate")
+    fetch_parser.add_argument("--rate", dest="rate")
 
     history_parser = subparsers.add_parser("history", help="Outputs history of poll/fetch requests")
     history_parser.add_argument("--only", dest="only")
 
     backup_parser = subparsers.add_parser("backup", help="Stores history in provided file")
     backup_parser.add_argument("file")
+    backup_parser.add_argument("--format", dest="file_format")
 
     restore_parser = subparsers.add_parser("restore", help="Replaces history file with provided file")
     restore_parser.add_argument("file")
@@ -57,7 +58,8 @@ def commands():
             bot.history()
 
     elif command == "backup":
-        bot.backup(opts.file)
+        option = opts.file_format if opts.file_format else "default"
+        bot.backup(opts.file, option)
 
     elif command == "services":
         bot.services()
