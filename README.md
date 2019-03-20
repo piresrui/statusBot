@@ -152,12 +152,5 @@ $ python3 status_bot.py help
 
 * Help prints a hopefully helpful help message :)
 
-##### 8. Status
-
-* Usage example
-```sh
-$ python3 status_bot.py status
-```
-
 ### License
 MIT
