@@ -44,7 +44,7 @@ $ python3 status_bot.py poll --only=github
 * Poll retrieves the status from all configured services
     * Optional arguments:
         * -\-only        :   Tells poll to only probe provided services
-        * -\-excludes    :   Tells poll to not probe provided services
+        * -\-exclude    :   Tells poll to not probe provided services
     
 * This function iterates over the data in the *config.json* file, makes a request to the specified API, stores the information in the local storage and prints the output for the user.
 
