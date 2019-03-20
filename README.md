@@ -1,7 +1,7 @@
 # StatusBot
 
 * Author:     Rui Pires
-* Email:      rfn.pires15@gmail.com
+* Email:      rfnpires15@gmail.com
 * College:    FCT/UNL
 * Degree:     MSc in Computer Science and Engineering
 * Year:       4th

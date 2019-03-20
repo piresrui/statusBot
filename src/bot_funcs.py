@@ -90,13 +90,16 @@ class Bot:
 
         try:
             with open( parameters.__backup_file_location__ ) as f:
-                if include:
-                    for line in f:
-                        for v in values:
-                            if v in line:
-                                print( line.rstrip() )
-                else:
-                    print( f.read() )
+
+                data = json.load( f )
+
+                for service, stats in data.items():
+                    for item in stats:
+                        if include:
+                            if service in values:
+                                print( self.__output_message__( service, item["date"], item["status"] ) )
+                        else:
+                            print( self.__output_message__( service, item["date"], item["status"] ) )
         except:
             self.__error_handler__( errors.__open_file_error_message__, True )
 
