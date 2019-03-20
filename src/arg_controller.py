@@ -1,5 +1,5 @@
 import argparse
-from status import Status
+from bot_funcs import Bot
 
 
 class Arg_Controller():
@@ -13,8 +13,7 @@ class Arg_Controller():
             "backup"    : self.__backup_handler__,
             "restore"   : self.__restore_handler__,
             "services"  : self.__services_handler__,
-            "help"      : self.__help_handler__,
-            "status"    : self.__status_helper__
+            "help"      : self.__help_handler__
         }
 
     # Set's up argparser
@@ -105,10 +104,6 @@ class Arg_Controller():
     def __help_handler__(self, bot, opts=""):
         self.__help__()
 
-    def __status_helper__(self, bot, opts=""):
-        bot.status()
-
-
     def __help__(self):
         print('''
                     poll                Outputs state of services
@@ -145,14 +140,12 @@ class Arg_Controller():
                     services            Outputs available services and endpoints
 
                     help                Outputs help message
-
-                    status              Outputs stats for the services
                 ''')
 
     # Run bot
     def run(self):
 
         opts = self.__arger__.parse_args()
-        bot = Status()
+        bot = Bot()
         command = opts.command
         self.__commands__[command](bot, opts)

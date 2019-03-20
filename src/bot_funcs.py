@@ -6,8 +6,10 @@ from shutil import copyfile
 import time
 import sys
 import parameters
+import errors
+import datetime
 
-class Status:
+class Bot:
     def __init__(self):
         self.__load_data__()
         self.__create_backup__()
@@ -34,7 +36,7 @@ class Status:
                 req = urllib.request.Request( url["api"], headers=parameters.__hdr__ )
                 response = urllib.request.urlopen( req )
             except:
-                print("Failed probing", url["url"])
+                self.__error_handler__( errors.__probe_error_message__, False, url["url"] )
                 continue
             
             page = json.load( response )
@@ -71,8 +73,7 @@ class Status:
     def restore(self, file_name, is_merge):
 
         if not file_name.endswith('.json'):
-            print( "Wrong file extension" )
-            sys.exit()
+            self.__error_handler__( errors.__file_extension_error__, True )
 
         if is_merge:
             self.__merge__( file_name )
@@ -97,7 +98,7 @@ class Status:
                 else:
                     print( f.read() )
         except:
-            print( "Failed opening file" )
+            self.__error_handler__( errors.__open_file_error_message__, True )
 
 
     ### Prints services
@@ -107,9 +108,7 @@ class Status:
                         url: {}
                         api: {}
                     '''.format( i, entry["name"], entry["url"], entry["api"] )
-            print( output ) 
-
-    
+            print( output )     
     
     
     ################################################
@@ -135,7 +134,7 @@ class Status:
 
                 self.__reset_file__( f, backup_data )
         except:
-            print( "Failed opening file" )                
+            self.__error_handler__( errors.__file_extension_error__, True )                
 
     # validates correct format
     def __check_if_format_valid__(self, file_name):
@@ -144,10 +143,9 @@ class Status:
                 data = json.load( f )
 
                 if not self.__validate_data__( data ):  #validate if file data is correct format
-                    print( "Invalid data format" )
-                    sys.exit()
+                    self.__error_handler__( errors.__invalid_data_format__, True )
         except:
-            print( "Failed opening file" )
+            self.__error_handler__( errors.__open_file_error_message__, True )
 
     # Merges two files
     def __merge__(self, file_name):
@@ -159,8 +157,7 @@ class Status:
                         merge_data = json.load( merge_file )
 
                         if not self.__validate_data__( merge_data ):  #validate if file data is correct format
-                            print( "Invalid data format" )
-                            sys.exit()
+                            self.__error_handler__( errors.__invalid_data_format__, True )
 
                         for service, stats in merge_data.items():
                             for item in stats:
@@ -168,7 +165,7 @@ class Status:
 
                         self.__reset_file__( f, backup_data )   
         except:
-            print( "Failed opening file")
+            self.__backup_type__( errors.__open_file_error_message__, True )
 
 
     # Backup files based on type    
@@ -190,10 +187,10 @@ class Status:
                                 else:
                                     f.write( self.__output_message__( service, entry["date"], entry["status"]) + "\n" )     # txt format, use poll format
             except:
-                print( "Failed opening file" )
+                self.__error_handler__( errors.__open_file_error_message__, True )
 
         else:
-            print("Invalid format")
+            self.__error_handler__( errors.__invalid_format__, True )
 
 
     # Prints message format for poll/fetch and writes to history file 
@@ -208,9 +205,9 @@ class Status:
                 try:
                     parameters.__data__ = json.load( f )
                 except:
-                    print( "Error on file load" )
+                    self.__error_handler__( errors.__open_file_error_message__, True )
         else:
-            print("No such file")
+            self.__error_handler__( errors.__no_such_file__, True )
 
     # Terminal window clear
     def __cls__(self):
@@ -242,11 +239,14 @@ class Status:
     # created backup file
     def __create_backup__(self):
         if not os.path.exists( parameters.__backup_file_location__ ):
-            with open( parameters.__backup_file_location__, "w+" ) as f:
-                backup = {}
-                for service in parameters.__data__["services"]:
-                    backup[service["id"]] = []
-                json.dump( backup, f, indent=4 )
+            try:
+                with open( parameters.__backup_file_location__, "w+" ) as f:
+                    backup = {}
+                    for service in parameters.__data__["services"]:
+                        backup[service["id"]] = []
+                    json.dump( backup, f, indent=4 )
+            except:
+                self.__error_handler__( errors.__open_file_error_message__, True)
 
 
     # Copies given file into backup file
@@ -254,7 +254,7 @@ class Status:
         try:
             copyfile( src, dest )
         except:
-            print("Failed file copy")
+            self.__error_handler__( errors.__failed_file_copy__, True )
 
     # resets file for writing
     def __reset_file__(self, f, backup_data):
@@ -262,4 +262,8 @@ class Status:
         json.dump( backup_data, f, indent=4 )
         f.truncate( )
 
-        
+    # Prints error message and exits
+    def __error_handler__(self, message, exit ,opts=""):
+        print(message, opts)
+        if exit:
+            sys.exit()

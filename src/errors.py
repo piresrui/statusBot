@@ -1,0 +1,7 @@
+__open_file_error_message__ = "Error opening file"
+__probe_error_message__ = "Failed request at"
+__file_extension_error__ = "Invalid file extension. Must be .json"
+__invalid_data_format__ = "Invalid data format. See documentation"
+__invalid_format__  = "Invalid file format"
+__no_such_file__ = "No such file"
+__failed_file_copy__ = "Failed file copy"
