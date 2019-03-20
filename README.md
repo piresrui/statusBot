@@ -25,6 +25,7 @@ StatusBot is a CLI to monitor certain micro-services, currently it monitors weth
 
 ```sh
 $ git clone git@github.com:piresrui/statusBot.git
+$ cd statusBot/
 $ cd src/
 $ python3 status_bot.py <command> <options>
 $ python3 status_bot.py poll --only=github
