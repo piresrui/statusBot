@@ -1,10 +1,5 @@
 # StatusBot
 
-* Author:     Rui Pires
-* College:    FCT/UNL
-* Degree:     MSc in Computer Science and Engineering
-* Year:       4th
-
 ### About
 Status
 StatusBot is a CLI to monitor certain micro-services, currently it monitors wether or not github and bitbucket are live.
