@@ -70,8 +70,31 @@ $ python3 status_bot.py history --only github
     * Optional arguments:
         * -\-only        :   Outputs only the data of the provided services
 
-* Data is stored in the *backup.json* file, it is created on launch if it does not exist.
+* Data is stored in the *backup.csv* file, it is created on launch if it does not exist.
 * The format for this file is as follows:
+```csv
+   service,date,state
+```
+* Service is the id of the service
+* Date: "%Y-%m-%dT%H:%M:%S.%fZ"
+* State: "up || down"
+
+##### 4. Backup
+
+* Usage example
+```sh
+$ python3 status_bot.py backup ~/Desktop/backup.csv --format=csv
+```
+
+* Backup stores the history data in a given location
+    * Mandatory arguments:
+        * <file_path>
+    * Optional arguments:
+        * -\-format      :   Saves history in given format
+            * Default is CSV, other available formats are JSON and TXT 
+        
+* The txt format stores the data ordered by service, in the same format as Poll and Fetch
+* The JSON format is as follows:
 ```json
     {
         "service_1":
@@ -90,34 +113,14 @@ $ python3 status_bot.py history --only github
                 ]
     }
 ```
-
-##### 4. Backup
-
-* Usage example
-```sh
-$ python3 status_bot.py backup ~/Desktop/backup.csv --format=csv
-```
-
-* Backup stores the history data in a given location
-    * Mandatory arguments:
-        * <file_path>
-    * Optional arguments:
-        * -\-format      :   Saves history in given format
-            * Default is JSON, other available formats are CSV and TXT 
-        
-* The txt format stores the data ordered by service, in the same format as Poll and Fetch
-* The CSV format adheres to the conventional CSV format 
-```csv
-Service,Date,Status
-```
-* The default format is JSON and is explained in the [History](#history) section
+* The default format is CSV and is explained in the [History](#history) section
 
 
 ##### 5. Restore
 
 * Usage example
 ```sh
-$ python3 status_bot.py restore ~/Desktop/backup.json --merge=true
+$ python3 status_bot.py restore ~/Desktop/backup.json --merge
 ```
 
 * Restore takes a file and replaces the content in the local storage with it's content
