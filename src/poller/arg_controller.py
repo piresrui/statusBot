@@ -1,22 +1,21 @@
 import argparse
-from . import bot_funcs
-
+from poller import poll_helper
 
 class ArgController:
 
     def __init__(self):
-        self.__arger__ = self.__set_up_arg_parser__()
-        self.__commands__ = {
-            "poll": self.__poll_handler__,
-            "fetch": self.__fetch_handler__,
-            "history": self.__history_handler__,
-            "backup": self.__backup_handler__,
-            "restore": self.__restore_handler__,
-            "services": self.__services_handler__,
-            "help": self.__help_handler__
+        self._arger = self._set_up_arg_parser()
+        self._commands = {
+            "poll": self._poll_handler,
+            "fetch": self._fetch_handler,
+            "history": self._history_handler,
+            "backup": self._backup_handler,
+            "restore": self._restore_handler,
+            "services": self._services_handler,
+            "help": self._help_handler
         }
 
-    def __set_up_arg_parser__(self):
+    def _set_up_arg_parser(self):
         """
         ArgParse setup
         """
@@ -51,7 +50,7 @@ class ArgController:
 
         return arger
 
-    def __poll_handler__(self, bot, opts=None):
+    def _poll_handler(self, bot, opts=None):
         """
         Handler for pool command
         :param bot: Bot object
@@ -62,7 +61,7 @@ class ArgController:
 
         # bot.poll(is_exclude, is_include, options)
 
-    def __fetch_handler__(self, bot, opts=None):
+    def _fetch_handler(self, bot, opts=None):
         """
         Handler for fetch command
         :param bot: Bot object
@@ -87,30 +86,31 @@ class ArgController:
             bot.fetch(is_exclude, is_include, options)
 
     # handler for history command
-    def __history_handler__(self, bot, opts=""):
+    def _history_handler(self, bot, opts=""):
         if opts.only:
             bot.history(True, opts.only)
         else:
             bot.history()
 
     # handler for backup command
-    def __backup_handler__(self, bot, opts=""):
+    def _backup_handler(self, bot, opts=""):
         option = opts.file_format if opts.file_format else "default"
         bot.backup(opts.file, option.lower())
 
     # handler for services command
-    def __services_handler__(self, bot, opts=""):
+    def _services_handler(self, bot, opts=""):
         bot.services()
 
+
     # handler for restore command
-    def __restore_handler__(self, bot, opts=""):
+    def _restore_handler(self, bot, opts=""):
         bot.restore(opts.file, True if opts.merge == "true" else False)
 
     # handler for help command
-    def __help_handler__(self, bot, opts=""):
+    def _help_handler(self, bot, opts=""):
         self.__help__()
 
-    def __help__(self):
+    def _help__(self):
         print('''
                     poll                Outputs state of services
                                             Optional args:
@@ -151,7 +151,7 @@ class ArgController:
     # Run bot
     def run(self):
 
-        opts = self.__arger__.parse_args()
-        bot = Bot()
+        opts = self._arger.parse_args()
+        bot = poll_helper.Poller()
         command = opts.command
-        self.__commands__[command](bot, opts)
+        self._commands[command](bot, opts)
