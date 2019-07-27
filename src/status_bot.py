@@ -1,7 +1,8 @@
-from arg_controller import Arg_Controller
+from poller import arg_controller
+
 
 if __name__ == "__main__":
-    bot = Arg_Controller().run()   
+    bot = arg_controller.ArgController().run()
 
 
 

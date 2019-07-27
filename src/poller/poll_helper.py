@@ -12,24 +12,32 @@ class Poller:
         self.services = self._load_services()
         self.logger = Logger()
 
-    def poll(self):
+    def poll(self, flag: str, service_list: list):
         for service in self.services:
+
+            service_id = service['id']
+
+            if flag == "exclude" and service_id in service_list:
+                continue
+
+            if flag == "only" and service_id not in service_list:
+                continue
+
             r = self._get_request(service['api'])
             message = r.json()
 
-            status = r.status_code == HTTPStatus.OK and message['status'][
-                'description'].rstrip() == config.SERVICE_UP_MESSAGE
+            status = r.status_code == HTTPStatus.OK and \
+                     message['status']['description'].rstrip() == config.SERVICE_UP_MESSAGE
 
-            service_id = service['id']
             poll_date = message['page']['updated_at']
             state = "up" if status else 'down'
 
             self.logger.save_to_file(service_id, poll_date, state)
             self._output_message(service_id, poll_date, state)
 
-    def fetch(self, interval: int):
+    def fetch(self, flag: str, service_list: list, interval: int):
         while True:
-            self.poll()
+            self.poll(flag, service_list)
             time.sleep(interval)
 
     def backup(self, dest: str):

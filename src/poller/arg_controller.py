@@ -1,5 +1,7 @@
 import argparse
 from poller import poll_helper
+import config
+
 
 class ArgController:
 
@@ -15,7 +17,7 @@ class ArgController:
             "help": self._help_handler
         }
 
-    def _set_up_arg_parser(self):
+    def _set_up_arg_parser(self) -> argparse.ArgumentParser:
         """
         ArgParse setup
         """
@@ -25,8 +27,8 @@ class ArgController:
         subparsers = arger.add_subparsers(dest="command")
 
         poll_parser = subparsers.add_parser("poll", help="Outputs state of services")
-        poll_parser.add_argument("--only")
-        poll_parser.add_argument("--exclude")
+        poll_parser.add_argument("--only", nargs="+")
+        poll_parser.add_argument("--exclude", nargs="+")
 
         fetch_parser = subparsers.add_parser("fetch", help="Polls services every n seconds")
         fetch_parser.add_argument("--rate")
@@ -37,76 +39,65 @@ class ArgController:
         history_parser.add_argument("--only")
 
         backup_parser = subparsers.add_parser("backup", help="Stores history in provided file")
-        backup_parser.add_argument("file")
+        backup_parser.add_argument("file", type=argparse.FileType("r"))
         backup_parser.add_argument("--format", dest="file_format")
 
         restore_parser = subparsers.add_parser("restore", help="Replaces history file with provided file")
         restore_parser.add_argument("file")
-        restore_parser.add_argument("--merge")
+        restore_parser.add_argument("--merge", action="store_true")
 
-        services_parser = subparsers.add_parser("services", help="Outputs available services")
+        subparsers.add_parser("services", help="Outputs available services")
 
-        help_parser = subparsers.add_parser("help", help="Outputs help message")
+        subparsers.add_parser("help", help="Outputs help message")
 
         return arger
 
-    def _poll_handler(self, bot, opts=None):
+    def _poll_handler(self, bot: poll_helper.Poller, opts: argparse.ArgumentParser):
         """
         Handler for pool command
         :param bot: Bot object
         :param opts: ArgParse output
         """
 
-        options = opts.exclude or opts.only or None
+        service_list = opts.exclude or opts.only or []
+        if opts.exclude:
+            flag = "exclude"
+        elif opts.only:
+            flag = "only"
+        else:
+            flag = None
 
-        # bot.poll(is_exclude, is_include, options)
+        bot.poll(flag, service_list)
 
-    def _fetch_handler(self, bot, opts=None):
+    def _fetch_handler(self, bot: poll_helper.Poller, opts: argparse.ArgumentParser):
         """
         Handler for fetch command
         :param bot: Bot object
         :param opts: Argparse output
         """
-        is_exclude = True if opts.exclude else False
-        is_include = True if opts.only else False
 
-
-
-
+        service_list = opts.exclude or opts.only or []
         if opts.exclude:
-            options = opts.exclude
+            flag = "exclude"
         elif opts.only:
-            options = opts.only
+            flag = "only"
         else:
-            options = ""
+            flag = None
 
-        if opts.rate:
-            bot.fetch(is_exclude, is_include, options, int(opts.rate))
-        else:
-            bot.fetch(is_exclude, is_include, options)
+        bot.fetch(flag, service_list, opts.rate or config.DEFAULT_RATE)
 
-    # handler for history command
     def _history_handler(self, bot, opts=""):
-        if opts.only:
-            bot.history(True, opts.only)
-        else:
-            bot.history()
+        pass
 
-    # handler for backup command
     def _backup_handler(self, bot, opts=""):
-        option = opts.file_format if opts.file_format else "default"
-        bot.backup(opts.file, option.lower())
+        pass
 
-    # handler for services command
     def _services_handler(self, bot, opts=""):
-        bot.services()
+        pass
 
-
-    # handler for restore command
     def _restore_handler(self, bot, opts=""):
-        bot.restore(opts.file, True if opts.merge == "true" else False)
+        pass
 
-    # handler for help command
     def _help_handler(self, bot, opts=""):
         self.__help__()
 
@@ -140,8 +131,7 @@ class ArgController:
 
                     restore <file_path> Replaces provided JSON backup into history
                                             Optional args:
-                                                --merge     Merges content instead of replacing it      
-                                                            usage: restore <file_path> --merge=true
+                                                --merge     Merges content instead of replacing
 
                     services            Outputs available services and endpoints
 
