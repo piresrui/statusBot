@@ -2,7 +2,8 @@ import os
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-HEADERS = {'User-Agent': "StatusBot v1.0"}
+HEADERS = {'User-Agent': "StatusBot v1.0",
+           "Cache-Control": "no-cache"}
 SERVICE_UP_MESSAGE = "All Systems Operational"
 DEFAULT_RATE = 5
 

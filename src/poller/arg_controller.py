@@ -31,15 +31,15 @@ class ArgController:
         poll_parser.add_argument("--exclude", nargs="+")
 
         fetch_parser = subparsers.add_parser("fetch", help="Polls services every n seconds")
-        fetch_parser.add_argument("--rate")
-        fetch_parser.add_argument("--only")
-        fetch_parser.add_argument("--exclude")
+        fetch_parser.add_argument("--rate", type=int)
+        fetch_parser.add_argument("--only", nargs="+")
+        fetch_parser.add_argument("--exclude", nargs="+")
 
         history_parser = subparsers.add_parser("history", help="Outputs history of poll/fetch requests")
-        history_parser.add_argument("--only")
+        history_parser.add_argument("--only", nargs="+")
 
         backup_parser = subparsers.add_parser("backup", help="Stores history in provided file")
-        backup_parser.add_argument("file", type=argparse.FileType("r"))
+        backup_parser.add_argument("file")
         backup_parser.add_argument("--format", dest="file_format")
 
         restore_parser = subparsers.add_parser("restore", help="Replaces history file with provided file")
@@ -52,13 +52,11 @@ class ArgController:
 
         return arger
 
-    def _poll_handler(self, bot: poll_helper.Poller, opts: argparse.ArgumentParser):
-        """
-        Handler for pool command
-        :param bot: Bot object
-        :param opts: ArgParse output
-        """
+    """
+    Handlers for system functions
+    """
 
+    def _poll_handler(self, bot: poll_helper.Poller, opts: argparse.ArgumentParser):
         service_list = opts.exclude or opts.only or []
         if opts.exclude:
             flag = "exclude"
@@ -70,12 +68,6 @@ class ArgController:
         bot.poll(flag, service_list)
 
     def _fetch_handler(self, bot: poll_helper.Poller, opts: argparse.ArgumentParser):
-        """
-        Handler for fetch command
-        :param bot: Bot object
-        :param opts: Argparse output
-        """
-
         service_list = opts.exclude or opts.only or []
         if opts.exclude:
             flag = "exclude"
@@ -86,48 +78,41 @@ class ArgController:
 
         bot.fetch(flag, service_list, opts.rate or config.DEFAULT_RATE)
 
-    def _history_handler(self, bot, opts=""):
-        pass
+    def _history_handler(self, bot: poll_helper.Poller, opts: argparse.ArgumentParser):
+        bot.history(opts.only)
 
-    def _backup_handler(self, bot, opts=""):
-        pass
+    def _backup_handler(self, bot: poll_helper.Poller, opts: argparse.ArgumentParser):
+        bot.backup(opts.file)
 
-    def _services_handler(self, bot, opts=""):
-        pass
+    def _services_handler(self, bot, opts=None):
+        bot.list_services()
 
-    def _restore_handler(self, bot, opts=""):
-        pass
+    def _restore_handler(self, bot: poll_helper.Poller, opts: argparse.ArgumentParser):
+        bot.restore(opts.file)
 
-    def _help_handler(self, bot, opts=""):
-        self.__help__()
+    def _help_handler(self, bot=None, opts=None):
+        self._help()
 
-    def _help__(self):
+    def _help(self):
         print('''
                     poll                Outputs state of services
                                             Optional args:
                                                 --only      Show only provided services                 
-                                                            usage: poll --only=bitbucket
                                                 --exclude   Omit provided services                      
-                                                            usage: poll --exclude=github  
 
                     fetch               Calls poll every 5 seconds
-                                            Optional agrs:
+                                            Optional args:
                                                 --rate      Refresh every rate seconds                  
-                                                            usage: fetch --rate=2
                                                 --only      Show only provided services                 
-                                                            usage: fetch --only=bitbucket
                                                 --exclude   Omit provided services                      
-                                                            usage: fetch --exclude=github  
 
                     history             Outputs all previous recorded poll/fetch calls
                                             Optional args:
                                                 --only      Show only provided services                 
-                                                            usage: history --only=github
 
                     backup <file_path>  Copies history to <file_path> in JSON format
                                             Optional args:
                                                 --format    Store data in requested format (TXT or CSV) 
-                                                            usage: backup <file_path> --format=csv
 
                     restore <file_path> Replaces provided JSON backup into history
                                             Optional args:
