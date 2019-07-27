@@ -33,7 +33,7 @@ $ python3 status_bot.py help
 
 * Usage example
 ```sh
-$ python3 status_bot.py poll --only=github
+$ python3 status_bot.py poll --only github
 ```
     
 * Poll retrieves the status from all configured services
@@ -47,7 +47,7 @@ $ python3 status_bot.py poll --only=github
 
 * Usage example
 ```sh
-$ python3 status_bot.py fetch --rate=2 --only=github
+$ python3 status_bot.py fetch --rate 2 --only github
 ```
 
 * Fetch calls Poll every n seconds
@@ -63,7 +63,7 @@ $ python3 status_bot.py fetch --rate=2 --only=github
 
 * Usage example
 ```sh
-$ python3 status_bot.py history --only=github
+$ python3 status_bot.py history --only github
 ```
 
 * History outputs the local storage
