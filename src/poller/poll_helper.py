@@ -3,6 +3,7 @@ import config
 from http import HTTPStatus
 import json
 import time
+import shutil
 
 
 class Poller:
@@ -30,6 +31,18 @@ class Poller:
         while True:
             self.poll()
             time.sleep(interval)
+
+    def backup(self, dest: str):
+        shutil.copy(config.BACKUP_FILE, dest)
+
+    def restore(self, src: str):
+        shutil.copy(src, config.BACKUP_FILE)
+
+    def history(self):
+        with open(config.BACKUP_FILE, "r") as f:
+            for line in f.readlines()[1:]:
+                service_id, date, state = line.rstrip().split(",")
+                self._output_message(service_id, date, state)
 
     """
         Private methods
