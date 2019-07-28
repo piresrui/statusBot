@@ -22,6 +22,7 @@ StatusBot is a CLI to monitor certain micro-services, currently it monitors weth
 $ git clone git@github.com:piresrui/statusBot.git
 $ cd statusBot/
 $ cd src/
+$ pip install -r requirements.txt
 $ python3 status_bot.py <command> <options>
 $ python3 status_bot.py poll --only=github
 $ python3 status_bot.py help
@@ -83,7 +84,7 @@ $ python3 status_bot.py history --only github
 
 * Usage example
 ```sh
-$ python3 status_bot.py backup ~/Desktop/backup.csv --format=csv
+$ python3 status_bot.py backup ~/Desktop/backup.json --format=json
 ```
 
 * Backup stores the history data in a given location
