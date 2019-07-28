@@ -4,6 +4,7 @@ from http import HTTPStatus
 import json
 import time
 import shutil
+from collections import defaultdict
 
 
 class Poller:
@@ -14,6 +15,13 @@ class Poller:
     def __init__(self):
         self.services = self._load_services()
         self.logger = Logger()
+        self.file_editor = FileEditor()
+
+        self.DEFAULT_FORMATS = {
+            "csv": self.file_editor.default_format,
+            "json": self.file_editor.json_format,
+            "txt": self.file_editor.txt_format
+        }
 
     def poll(self, flag: str, service_list: list):
         """
@@ -54,12 +62,14 @@ class Poller:
             self.poll(flag, service_list)
             time.sleep(interval)
 
-    def backup(self, dest: str):
+    def backup(self, dest: str, flag: str):
         """
         Copies system backup to specified file
         :param dest: Path of file to copy to
+        :param flag: Format to copy as
         """
-        shutil.copy(config.BACKUP_FILE, dest)
+
+        self.DEFAULT_FORMATS[flag](dest)
 
     def restore(self, src: str):
         """
@@ -93,17 +103,19 @@ class Poller:
         Private methods
     """
 
-    def _output_message(self, id, date, status):
+    @staticmethod
+    def _output_message(service_id, date, status):
         """
         Prints message in poll format
-        :param id: Service ID
+        :param service_id: Service ID
         :param date: Poll date
         :param status: State of poll
         """
-        output = "[{}] {} - {}".format(id, date, status)
+        output = config.DEFAULT_POLL_FORMAT.format(service_id, date, status)
         print(output)
 
-    def _get_request(self, service: str) -> requests.Response:
+    @staticmethod
+    def _get_request(service: str) -> requests.Response:
         """
         Returns response from service
         :param service: URL of request
@@ -111,13 +123,51 @@ class Poller:
         """
         return requests.get(service, headers=config.HEADERS)
 
-    def _load_services(self):
+    @staticmethod
+    def _load_services():
         """
         Loads config services into memory
         """
         with open(config.SERVICE_FILE, "r") as f:
             j = json.load(f)
         return j['services']
+
+
+class FileEditor:
+    """
+    Class to deal with file writes
+    """
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def txt_format(dest: str):
+
+        with open(config.BACKUP_FILE, "r") as f:
+            with open(dest, "a+") as dest_f:
+                for line in f.readlines()[1:]:
+                    service_id, date, state = line.split(",")
+                    dest_f.write(config.DEFAULT_POLL_FORMAT.format(service_id, date, state))
+
+    @staticmethod
+    def json_format(dest: str):
+
+        json_default = defaultdict(list)
+
+        with open(config.BACKUP_FILE, "r") as f:
+            for line in f.readlines()[1:]:
+                service_id, date, state = line.rstrip().split(",")
+                new_val = {
+                    "date": date,
+                    "status": state
+                }
+                json_default[service_id].append(new_val)
+        with open(dest, "w+") as f:
+            json.dump(dict(json_default), f, indent=4)
+
+    @staticmethod
+    def default_format(dest: str):
+        shutil.copyfile(config.BACKUP_FILE, dest)
 
 
 class Logger:
@@ -128,7 +178,8 @@ class Logger:
     def __init__(self):
         pass
 
-    def save_to_file(self, service: str, date: str, status: str):
+    @staticmethod
+    def save_to_file(service: str, date: str, status: str):
         """
         Logs poll values into backup file
         :param service: Service id
