@@ -5,16 +5,7 @@ Status
 StatusBot is a CLI to monitor certain micro-services, currently it monitors wether or not github and bitbucket are live.
 
 ### Tech
-* StatusBot was developed in python 3.7.2 and it uses only included modules
-* The modules used are:
-    * argparse  :   Parsing arguments
-    * os        :   File operations
-    * json      :   JSON parsing
-    * urllib    :   API requests
-    * re        :   String compares
-    * shutil    :   File copying   
-    * time      :   Sleep
-    * sys       :   Exiting
+* StatusBot was developed in python 3.7.2
 
 ### How to use
 
