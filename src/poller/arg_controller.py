@@ -1,7 +1,7 @@
 import argparse
 from poller import poll_helper
 import config
-
+import sys
 
 class ArgController:
 
@@ -118,15 +118,16 @@ class ArgController:
                                             Optional args:
                                                 --merge     Merges content instead of replacing
 
-                    services            Outputs available services and endpoints
-
+                    services            Outputs available services and endpoint
+s
                     help                Outputs help message
                 ''')
 
     # Run bot
     def run(self):
-
         opts = self._arger.parse_args()
         bot = poll_helper.Poller()
-        command = opts.command
-        self._commands[command](bot, opts)
+        if not opts.command:
+            print("Invalid usage. Use -h/--help/help.")
+            sys.exit(1)
+        self._commands[opts.command](bot, opts)
