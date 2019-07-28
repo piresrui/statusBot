@@ -1,7 +1,6 @@
 # StatusBot
 
 ### About
-Status
 StatusBot is a CLI to monitor certain micro-services, currently it monitors wether or not github and bitbucket are live.
 
 ### Tech
@@ -14,9 +13,9 @@ $ git clone git@github.com:piresrui/statusBot.git
 $ cd statusBot/
 $ cd src/
 $ pip install -r requirements.txt
-$ python3 status_bot.py <command> <options>
-$ python3 status_bot.py poll --only=github
-$ python3 status_bot.py help
+$ ./status_bot.py <command> <options>
+$ ./status_bot.py poll --only=github
+$ ./status_bot.py help
 ```
 
 ### Functionalities and design
@@ -25,7 +24,7 @@ $ python3 status_bot.py help
 
 * Usage example
 ```sh
-$ python3 status_bot.py poll --only github
+$ ./status_bot.py poll --only github
 ```
     
 * Poll retrieves the status from all configured services
@@ -39,7 +38,7 @@ $ python3 status_bot.py poll --only github
 
 * Usage example
 ```sh
-$ python3 status_bot.py fetch --rate 2 --only github
+$ ./status_bot.py fetch --rate 2 --only github
 ```
 
 * Fetch calls Poll every n seconds
@@ -55,7 +54,7 @@ $ python3 status_bot.py fetch --rate 2 --only github
 
 * Usage example
 ```sh
-$ python3 status_bot.py history --only github
+$ ./status_bot.py history --only github
 ```
 
 * History outputs the local storage
@@ -75,7 +74,7 @@ $ python3 status_bot.py history --only github
 
 * Usage example
 ```sh
-$ python3 status_bot.py backup ~/Desktop/backup.json --format=json
+$ ./status_bot.py backup ~/Desktop/backup.json --format=json
 ```
 
 * Backup stores the history data in a given location
@@ -112,7 +111,7 @@ $ python3 status_bot.py backup ~/Desktop/backup.json --format=json
 
 * Usage example
 ```sh
-$ python3 status_bot.py restore ~/Desktop/backup.json --merge
+$ ./status_bot.py restore ~/Desktop/backup.json --merge
 ```
 
 * Restore takes a file and replaces the content in the local storage with it's content
@@ -128,7 +127,7 @@ $ python3 status_bot.py restore ~/Desktop/backup.json --merge
 
 * Usage example
 ```sh
-$ python3 status_bot.py services
+$ ./status_bot.py services
 ```
 
 * Services outputs all the available services in the config.json* file
@@ -137,7 +136,7 @@ $ python3 status_bot.py services
 
 * Usage example
 ```sh
-$ python3 status_bot.py help
+$ ./status_bot.py help
 ```
 
 * Help prints a hopefully helpful help message :)
