@@ -40,7 +40,7 @@ class ArgController:
 
         backup_parser = subparsers.add_parser("backup", help="Stores history in provided file")
         backup_parser.add_argument("file")
-        backup_parser.add_argument("--format", dest="file_format")
+        backup_parser.add_argument("--format", nargs="?", default="csv", choices=config.AVAILABLE_FORMATS)
 
         restore_parser = subparsers.add_parser("restore", help="Replaces history file with provided file")
         restore_parser.add_argument("file")
@@ -82,7 +82,7 @@ class ArgController:
         bot.history(opts.only)
 
     def _backup_handler(self, bot: poll_helper.Poller, opts: argparse.ArgumentParser):
-        bot.backup(opts.file)
+        bot.backup(opts.file, opts.format)
 
     def _services_handler(self, bot, opts=None):
         bot.list_services()
@@ -110,9 +110,9 @@ class ArgController:
                                             Optional args:
                                                 --only      Show only provided services                 
 
-                    backup <file_path>  Copies history to <file_path> in JSON format
+                    backup <file_path>  Copies history to <file_path> in CSV format
                                             Optional args:
-                                                --format    Store data in requested format (TXT or CSV) 
+                                                --format    Store data in requested format (TXT or JSON) 
 
                     restore <file_path> Replaces provided JSON backup into history
                                             Optional args:
