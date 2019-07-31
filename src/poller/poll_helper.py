@@ -70,13 +70,18 @@ class Poller:
         """
 
         self.DEFAULT_FORMATS[flag](dest)
+        print("Successfully created {} with {} format".format(dest, flag))
 
-    def restore(self, src: str):
+    def restore(self, src: str, merge: bool):
         """
         Copies given file into system backup
         :param src: FIle of path to copy from
         """
-        shutil.copy(src, config.BACKUP_FILE)
+        if merge:
+            self.file_editor.merge(src)
+        else:
+            shutil.copy(src, config.BACKUP_FILE)
+        print("Successfully restored backup file.")
 
     def history(self, service_list: list):
         """
@@ -137,6 +142,7 @@ class FileEditor:
     """
     Class to deal with file writes
     """
+
     def __init__(self):
         pass
 
@@ -168,6 +174,14 @@ class FileEditor:
     @staticmethod
     def default_format(dest: str):
         shutil.copyfile(config.BACKUP_FILE, dest)
+
+    @staticmethod
+    def merge(src: str):
+
+        with open(config.BACKUP_FILE, "a") as f:
+            with open(src, "r") as rfile:
+                for line in rfile.readlines()[1:]:
+                    f.write(line)
 
 
 class Logger:
