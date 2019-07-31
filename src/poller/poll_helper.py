@@ -5,6 +5,9 @@ import json
 import time
 import shutil
 from collections import defaultdict
+import datetime
+import sys
+import signal
 
 
 class Poller:
@@ -22,6 +25,7 @@ class Poller:
             "json": self.file_editor.json_format,
             "txt": self.file_editor.txt_format
         }
+        self._capture_sigint()
 
     def poll(self, flag: str, service_list: list):
         """
@@ -45,7 +49,8 @@ class Poller:
             status = r.status_code == HTTPStatus.OK and \
                      message['status']['description'].rstrip() == config.SERVICE_UP_MESSAGE
 
-            poll_date = message['page']['updated_at']
+            # poll_date = message['page']['updated_at']
+            poll_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
             state = "up" if status else 'down'
 
             self.logger.save_to_file(service_id, poll_date, state)
@@ -136,6 +141,14 @@ class Poller:
         with open(config.SERVICE_FILE, "r") as f:
             j = json.load(f)
         return j['services']
+
+    @staticmethod
+    def _capture_sigint():
+        def signal_handler(sig, frame):
+            print("Exiting...")
+            sys.exit(0)
+
+        signal.signal(signal.SIGINT, signal_handler)
 
 
 class FileEditor:
