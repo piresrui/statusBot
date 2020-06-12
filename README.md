@@ -4,7 +4,7 @@
 StatusBot is a CLI to monitor certain micro-services, currently it monitors wether or not github and bitbucket are live.
 
 ### Tech
-* StatusBot was developed in python 3.7.2
+* StatusBot was developed in python 3.7.
 
 ### How to use
 

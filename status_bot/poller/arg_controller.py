@@ -1,7 +1,8 @@
 import argparse
-from poller import poll_helper
-import config
 import sys
+
+from poller import poll_helper
+from config import config
 
 
 class ArgController:
@@ -18,12 +19,13 @@ class ArgController:
             "help": self._help_handler
         }
 
-    def _set_up_arg_parser(self) -> argparse.ArgumentParser:
+    @staticmethod
+    def _set_up_arg_parser() -> argparse.ArgumentParser:
         """
         ArgParse setup
         """
 
-        arger = argparse.ArgumentParser(description="StatusBot v1.0 by RuiPires")
+        arger = argparse.ArgumentParser(description="StatusBot")
 
         subparsers = arger.add_subparsers(dest="command")
 

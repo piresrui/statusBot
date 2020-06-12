@@ -8,5 +8,5 @@ DEFAULT_RATE = 5
 DEFAULT_POLL_FORMAT = "[{}] {} - {}"
 AVAILABLE_FORMATS = ["csv", "json", "txt"]
 
-SERVICE_FILE = os.path.join(ROOT_DIR, "config/services.json")
-BACKUP_FILE = os.path.join(ROOT_DIR, "config/backup.csv")
+SERVICE_FILE = os.path.join(ROOT_DIR, "services.json")
+BACKUP_FILE = os.path.join(ROOT_DIR, "backup.csv")

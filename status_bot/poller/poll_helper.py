@@ -1,5 +1,4 @@
 import requests
-import config
 from http import HTTPStatus
 import json
 import time
@@ -8,6 +7,8 @@ from collections import defaultdict
 import datetime
 import sys
 import signal
+
+from config import config
 
 
 class Poller:
