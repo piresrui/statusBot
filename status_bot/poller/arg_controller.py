@@ -60,7 +60,7 @@ class ArgController:
     """
 
     @staticmethod
-    def _poll_handler(bot: poll_helper.Poller, opts: argparse.ArgumentParser):
+    def _poll_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
         service_list = opts.exclude or opts.only or []
         if opts.exclude:
             flag = "exclude"
@@ -72,7 +72,7 @@ class ArgController:
         bot.poll(flag, service_list)
 
     @staticmethod
-    def _fetch_handler(bot: poll_helper.Poller, opts: argparse.ArgumentParser):
+    def _fetch_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
         service_list = opts.exclude or opts.only or []
         if opts.exclude:
             flag = "exclude"
@@ -84,11 +84,11 @@ class ArgController:
         bot.fetch(flag, service_list, opts.rate or config.DEFAULT_RATE)
 
     @staticmethod
-    def _history_handler(bot: poll_helper.Poller, opts: argparse.ArgumentParser):
+    def _history_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
         bot.history(opts.only)
 
     @staticmethod
-    def _backup_handler(bot: poll_helper.Poller, opts: argparse.ArgumentParser):
+    def _backup_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
         bot.backup(opts.file, opts.format)
 
     @staticmethod
@@ -96,13 +96,14 @@ class ArgController:
         bot.list_services()
 
     @staticmethod
-    def _restore_handler(bot: poll_helper.Poller, opts: argparse.ArgumentParser):
+    def _restore_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
         bot.restore(opts.file, opts.merge)
 
     def _help_handler(self, bot=None, opts=None):
         self._help()
 
-    def _help(self):
+    @staticmethod
+    def _help():
         print('''
                     poll                Outputs state of services
                                             Optional args:

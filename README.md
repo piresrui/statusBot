@@ -1,10 +1,18 @@
 # StatusBot
 
+### TODOs
+
+This was created as a "learn as you go" project for python.
+As such, many of what is here are now things I'm aware aren't best practices, so there are many TODOs regarding this
+ project.
+ I'll be essentially re-writing this over the next couple of weeks as I have time.
+
 ### About
 StatusBot is a CLI to monitor certain micro-services, currently it monitors wether or not github and bitbucket are live.
 
-### Tech
-* StatusBot was developed in python 3.7.
+### Libraries
+
+statusBot is built with pure python, with the exception of the magnificent __requests__ library.
 
 ### How to use
 
