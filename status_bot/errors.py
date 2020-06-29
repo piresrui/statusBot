@@ -1,0 +1,2 @@
+class InvalidServiceError(Exception):
+    pass
