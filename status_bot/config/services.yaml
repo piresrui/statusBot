@@ -1,0 +1,9 @@
+services:
+  bitbucket:
+    id: "bitbucket"
+    name: "Bitbucket"
+    api: "https://bitbucket.status.atlassian.com/api/v2/"
+  github:
+    id: "github"
+    name: "Github"
+    api: "https://www.githubstatus.com/api/v2/"
