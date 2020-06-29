@@ -1,7 +1,8 @@
 from typing import List
 
-from errors import InvalidServiceError
-from utils import Requester, Services
+from utils.enums import Service
+from utils.errors import InvalidServiceError
+from utils.processors import Requester, Filter
 
 
 class Poll:
@@ -9,7 +10,7 @@ class Poll:
     def __init__(self):
         pass
 
-    def poll(self, services: List[Services]):
+    def poll(self, services: List[Service]):
 
         for service in services:
             try:
@@ -17,10 +18,7 @@ class Poll:
 
                 r = response.json()
 
-                print(r)
+                Filter.process(service=service, data=r)
             except KeyError:
                 raise InvalidServiceError
 
-
-if __name__ == "__main__":
-    Poll().poll(services=[s for s in Services])

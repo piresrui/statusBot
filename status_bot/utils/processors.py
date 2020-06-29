@@ -1,13 +1,8 @@
-from enum import Enum
 from typing import Tuple
 import requests
 
 from config import *
-
-
-class Services(Enum):
-    github = "github"
-    bitbucket = "bitbucket"
+from utils import Service, Issue, ApiParserError, Logger
 
 
 class _WS:
@@ -25,20 +20,20 @@ class _WS:
         return url_suffix
 
     @staticmethod
-    def _fetch_base(service: Services) -> str:
+    def _fetch_base(service: Service) -> str:
         item: dict = BaseConfig.SERVICES[service.value]
 
         return item.get("api")
 
     @classmethod
-    def get_url(cls, service: Services) -> str:
+    def get_url(cls, service: Service) -> str:
         return cls._fetch_base(service) + cls._append()
 
 
 class Requester:
 
     @staticmethod
-    def request(service: Services):
+    def request(service: Service):
         url = _WS.get_url(service=service)
 
         return Requester._requester(url=url)
@@ -51,3 +46,20 @@ class Requester:
         )
 
         return response.status_code, response
+
+
+class Filter:
+
+    @staticmethod
+    def process(service: Service, data: dict):
+        status = data.get("status", {}).get("indicator", None)
+        if status is None:
+            raise ApiParserError("Failed fetching status")
+
+        if Issue.has_value(status):
+            # TODO call logger?
+            Logger.output(service=service, indicator=Issue(status))
+        else:
+            # Should not happen, check APIs
+            pass
+
