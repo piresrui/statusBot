@@ -1,3 +1,4 @@
+import time
 from typing import List
 
 from utils.enums import Service
@@ -16,9 +17,11 @@ class Poll:
             try:
                 _, response = Requester.request(service=service)
 
-                r = response.json()
-
-                Filter.process(service=service, data=r)
+                Filter.process(service=service, data=response.json())
             except KeyError:
                 raise InvalidServiceError
 
+    def fetch(self, rate: int):
+        while True:
+            self.poll(services=[])
+            time.sleep(rate)

@@ -1,21 +1,24 @@
 import argparse
 import sys
 
-from poller import poll_helper
-from config import config
+from poller import Poll
+from config import *
+from utils.enums import Service
 
 
-class ArgController:
+class StatusBot:
 
     def __init__(self):
         self._arger = self._set_up_arg_parser()
         self._commands = {
             "poll": self._poll_handler,
+            """
             "fetch": self._fetch_handler,
             "history": self._history_handler,
             "backup": self._backup_handler,
             "restore": self._restore_handler,
             "services": self._services_handler,
+            """
             "help": self._help_handler
         }
 
@@ -60,44 +63,18 @@ class ArgController:
     """
 
     @staticmethod
-    def _poll_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
-        service_list = opts.exclude or opts.only or []
-        if opts.exclude:
-            flag = "exclude"
-        elif opts.only:
-            flag = "only"
+    def _poll_handler(target: Poll, opts: argparse.Namespace):
+        if opts.exclude is not None:
+            services = opts.exclude
+        elif opts.only is not None:
+            services = opts.only
         else:
-            flag = None
+            services = None
 
-        bot.poll(flag, service_list)
+        services = [Service(service) for service in services] if services \
+            else [service for service in Service]
 
-    @staticmethod
-    def _fetch_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
-        service_list = opts.exclude or opts.only or []
-        if opts.exclude:
-            flag = "exclude"
-        elif opts.only:
-            flag = "only"
-        else:
-            flag = None
-
-        bot.fetch(flag, service_list, opts.rate or config.DEFAULT_RATE)
-
-    @staticmethod
-    def _history_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
-        bot.history(opts.only)
-
-    @staticmethod
-    def _backup_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
-        bot.backup(opts.file, opts.format)
-
-    @staticmethod
-    def _services_handler(bot, opts=None):
-        bot.list_services()
-
-    @staticmethod
-    def _restore_handler(bot: poll_helper.Poller, opts: argparse.Namespace):
-        bot.restore(opts.file, opts.merge)
+        target.poll(services=services)
 
     def _help_handler(self, bot=None, opts=None):
         self._help()
@@ -136,8 +113,8 @@ s
     # Run bot
     def run(self):
         opts = self._arger.parse_args()
-        bot = poll_helper.Poller()
+        poll = Poll()
         if not opts.command:
             print("Invalid usage. Use -h/--help/help.")
             sys.exit(1)
-        self._commands[opts.command](bot, opts)
+        self._commands[opts.command](target=poll, opts=opts)

@@ -3,3 +3,7 @@ backup*
 venv
 .idea/
 
+
+build/
+*.egg-info
+dist/
