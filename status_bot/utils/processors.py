@@ -2,7 +2,9 @@ from typing import Tuple
 import requests
 
 from config import *
-from utils import Service, Issue, ApiParserError, Logger
+from utils.enums import Service, Issue
+from utils.errors import ApiParserError
+from utils.logger import Logger
 
 
 class _WS:
@@ -58,8 +60,9 @@ class Filter:
 
         if Issue.has_value(status):
             # TODO call logger?
-            Logger.output(service=service, indicator=Issue(status))
+            Logger().output(service=service, indicator=Issue(status))
         else:
             # Should not happen, check APIs
             pass
+
 
