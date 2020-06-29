@@ -1,18 +1,17 @@
 # StatusBot
 
-### TODOs
-
-This was created as a "learn as you go" project for python.
-As such, many of what is here are now things I'm aware aren't best practices, so there are many TODOs regarding this
- project.
- I'll be essentially re-writing this over the next couple of weeks as I have time.
+### DISCLAIMER. **MUST READ**
+This is currenly being re-written because it was an old project I used to learn python. As such, things were working but not ideal.
+The documentation bellow is for the original version (tag v1.0).
+When I'm done with re-writting, I'll update it.
+Tag v1.0 is working, everything until the next release is BROKEN since it is a WIP.
 
 ### About
 StatusBot is a CLI to monitor certain micro-services, currently it monitors wether or not github and bitbucket are live.
 
 ### Libraries
 
-statusBot is built with pure python, with the exception of the magnificent __requests__ library.
+statusBot makes use of requests and pyyaml.
 
 ### How to use
 
