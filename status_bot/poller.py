@@ -1,9 +1,9 @@
 import time
 from typing import List
 
-from utils.enums import Service
-from utils.errors import InvalidServiceError
-from utils.processors import Requester, Filter
+from status_bot.utils.enums import Service
+from status_bot.utils.errors import InvalidServiceError
+from status_bot.utils.processors import Requester, Filter
 
 
 class Poll:

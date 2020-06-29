@@ -1,9 +1,9 @@
 import argparse
 import sys
 
-from poller import Poll
-from config import *
-from utils.enums import Service
+from status_bot.poller import Poll
+from status_bot.config import *
+from status_bot.utils.enums import Service
 
 
 class StatusBot:

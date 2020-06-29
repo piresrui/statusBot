@@ -5,5 +5,5 @@ venv
 
 
 build/
-*.egg-info
+status_bot.egg-info
 dist/

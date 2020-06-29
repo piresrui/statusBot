@@ -1,10 +1,10 @@
 from typing import Tuple
 import requests
 
-from config import *
-from utils.enums import Service, Issue
-from utils.errors import ApiParserError
-from utils.logger import Logger
+from status_bot.config import *
+from status_bot.utils.enums import Service, Issue
+from status_bot.utils.errors import ApiParserError
+from status_bot.utils.logger import Logger
 
 
 class _WS:

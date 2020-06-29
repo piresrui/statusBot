@@ -1,6 +1,6 @@
 import datetime
 
-from utils.enums import Issue, Service
+from status_bot.utils.enums import Issue, Service
 
 
 class Singleton(object):

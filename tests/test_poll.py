@@ -1,4 +1,4 @@
-from status_bot.poller_tmp import Poll
+from status_bot.poller import Poll
 from status_bot.utils.enums import Service
 
 if __name__ == "__main__":
